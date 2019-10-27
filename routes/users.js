@@ -1,9 +1,9 @@
 const router = require('express').Router();
 const data = require('../data/users');
+const { getUser, createUser } = require('../controllers/users');
 
-router.get('/users', (req, res) => {
-  res.send(data);
-});
+router.get('/users', getUser);
+router.post('/users', createUser);
 
 router.get('/users/:id', (req, res) => {
   let d = false;
