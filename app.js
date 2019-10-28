@@ -16,7 +16,14 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
   useFindAndModify: false,
 });
 
+app.use((req, res, next) => {
+  req.user = {
+    _id: '5db68d6ccb6c1229303afc22',
+  };
+  next();
+});
 app.use('/', require('./routes/users'));
+app.use('/', require('./routes/cards'));
 
 app.use(function(req, res, next) {
   res.status(404).send({ "message": "Запрашиваемый ресурс не найден" });
