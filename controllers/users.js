@@ -19,3 +19,18 @@ module.exports.createUser = (req, res) => {
     .then(user => res.send({ data: user }))
     .catch(err => res.status(500).send({ message: err.message }));
 };
+
+module.exports.changeAbout = (req, res) => {
+  console.log(req.body);
+  const { about } = req.body;
+  User.findByIdAndUpdate({ _id: req.user._id }, { about: about })
+    .then(user => res.send({ data: user }))
+    .catch(err => res.status(500).send({ message: 'Такого пользователя нет' }));
+};
+
+module.exports.changeAvatar = (req, res) => {
+  const { link } = req.body;
+  User.findByIdAndUpdate({ _id: req.user._id }, { avatar: link })
+    .then(user => res.send({ data: user }))
+    .catch(err => res.status(500).send({ message: 'Такого пользователя нет' }));
+};
