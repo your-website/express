@@ -25,11 +25,13 @@ app.use((req, res, next) => {
 app.use('/', require('./routes/users'));
 app.use('/', require('./routes/cards'));
 
-app.use(function(req, res, next) {
-  res.status(404).send({ "message": "Запрашиваемый ресурс не найден" });
+app.use((req, res) => {
+  res.status(404).send({ message: 'Запрашиваемый ресурс не найден' });
 });
 
 app.listen(PORT, () => {
+  // eslint-disable-next-line no-console
   console.log('Ссылка на сервер:');
+  // eslint-disable-next-line no-console
   console.log(BASE_PATH);
 });
