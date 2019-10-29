@@ -21,7 +21,7 @@ npm run start;
 - GET /cards — возвращает все карточки
 - POST /cards — создаёт карточку - необходимо передавать json-объект с параметрами name, link.
 - DELETE /cards/:cardId — удаляет карточку по идентификатору
-- PATCH /users/me — обновить профиль - необходимо передавать json-объект с параметром about.
+- PATCH /users/me — обновить профиль - необходимо передавать json-объект с параметром name, about.
 - PATCH /users/me/avatar — обновить аватар - необходимо передавать json-объект с параметром link.
 - PUT /cards/:cardId/likes — поставить лайк карточке
 - DELETE /cards/:cardId/likes — убрать лайк карточке

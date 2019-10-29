@@ -1,35 +1,55 @@
 const User = require('../models/user');
 
-module.exports.getUsers = (req, res) => {
+function getUsers(req, res) {
   User.find({})
     .then((user) => res.send({ data: user }))
     .catch((err) => res.status(500).send({ message: err.message }));
-};
+}
 
-module.exports.getUser = (req, res) => {
+function getUser(req, res) {
   User.findById(req.params.id)
     .then((user) => res.send({ data: user }))
     .catch(() => res.status(500).send({ message: 'Такого пользователя нет' }));
-};
+}
 
-module.exports.createUser = (req, res) => {
+function createUser(req, res) {
   const { name, about, avatar } = req.body;
 
   User.create({ name, about, avatar })
     .then((user) => res.send({ data: user }))
     .catch((err) => res.status(500).send({ message: err.message }));
-};
+}
 
-module.exports.changeAbout = (req, res) => {
-  const { about } = req.body;
-  User.findByIdAndUpdate({ _id: req.user._id }, { about })
+function changeAbout(req, res) {
+  const { name, about } = req.body;
+  User.findByIdAndUpdate(
+    { _id: req.user._id },
+    { name, about },
+    {
+      new: true,
+      runValidators: true,
+      upsert: true,
+    },
+  )
     .then((user) => res.send({ data: user }))
-    .catch(() => res.status(500).send({ message: 'Такого пользователя нет' }));
-};
+    .catch((err) => res.status(500).send({ message: err.message }));
+}
 
-module.exports.changeAvatar = (req, res) => {
+function changeAvatar(req, res) {
   const { link } = req.body;
-  User.findByIdAndUpdate({ _id: req.user._id }, { avatar: link })
+  User.findByIdAndUpdate(
+    { _id: req.user._id },
+    { avatar: link },
+    {
+      new: true,
+      runValidators: true,
+      upsert: true,
+    },
+  )
     .then((user) => res.send({ data: user }))
-    .catch(() => res.status(500).send({ message: 'Такого пользователя нет' }));
+    .catch((err) => res.status(500).send({ message: err.message }));
+}
+
+module.exports = {
+  getUsers, getUser, createUser, changeAbout, changeAvatar,
 };
