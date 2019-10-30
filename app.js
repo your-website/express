@@ -22,8 +22,8 @@ app.use((req, res, next) => {
   };
   next();
 });
-app.use('/', require('./routes/users'));
-app.use('/', require('./routes/cards'));
+
+app.use('/', require('./routes/index'));
 
 app.use((req, res) => {
   res.status(404).send({ message: 'Запрашиваемый ресурс не найден' });
