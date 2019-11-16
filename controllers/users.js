@@ -8,7 +8,13 @@ function getUsers(req, res) {
 
 function getUser(req, res) {
   User.findById(req.params.id)
-    .then((user) => res.send({ data: user }))
+    .then((user) => {
+      if (!user) {
+        res.status(404).send({ message: 'Такого пользователя нет' });
+      } else {
+        res.send({ data: user });
+      }
+    })
     .catch(() => res.status(500).send({ message: 'Такого пользователя нет' }));
 }
 

@@ -15,7 +15,13 @@ function createCard(req, res) {
 
 function deleteCard(req, res) {
   Cards.findByIdAndRemove(req.params.cardId)
-    .then((cards) => res.send({ data: cards }))
+    .then((cards) => {
+      if (!cards) {
+        res.status(404).send({ message: 'Такого пользователя нет' });
+      } else {
+        res.send({ data: cards });
+      }
+    })
     .catch((err) => res.status(500).send({ message: err.message }));
 }
 
