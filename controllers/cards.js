@@ -27,13 +27,25 @@ function deleteCard(req, res) {
 
 function likeCard(req, res) {
   Cards.findByIdAndUpdate(req.params.cardId, { $addToSet: { likes: req.user._id } }, { new: true })
-    .then((cards) => res.send({ data: cards }))
+    .then((cards) => {
+      if (!cards) {
+        res.status(404).send({ message: 'Такого пользователя нет' });
+      } else {
+        res.send({ data: cards });
+      }
+    })
     .catch((err) => res.status(500).send({ message: err.message }));
 }
 
 function dislikeCard(req, res) {
   Cards.findByIdAndUpdate(req.params.cardId, { $pull: { likes: req.user._id } }, { new: true })
-    .then((cards) => res.send({ data: cards }))
+    .then((cards) => {
+      if (!cards) {
+        res.status(404).send({ message: 'Такого пользователя нет' });
+      } else {
+        res.send({ data: cards });
+      }
+    })
     .catch((err) => res.status(500).send({ message: err.message }));
 }
 
