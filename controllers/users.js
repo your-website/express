@@ -20,24 +20,6 @@ function getUser(req, res) {
     .catch(() => res.status(500).send({ message: 'Такого пользователя нет' }));
 }
 
-// function createUser(req, res) {
-//   bcrypt.hash(req.body.password, 10)
-//     .then((hash) => User.create({
-//       name: req.body.name,
-//       about: req.body.about,
-//       avatar: req.body.avatar,
-//       email: req.body.email,
-//       password: hash,
-//     }))
-//     .then((user) => {
-//       res.status(201).send({
-//         _id: user._id,
-//         email: user.email,
-//       });
-//     })
-//     .catch((err) => res.status(500).send({ message: err.message }));
-// }
-
 function changeAbout(req, res) {
   const { name, about } = req.body;
   User.findByIdAndUpdate(
@@ -67,21 +49,6 @@ function changeAvatar(req, res) {
     .then((user) => res.send({ data: user }))
     .catch((err) => res.status(500).send({ message: err.message }));
 }
-
-// function login(req, res) {
-//   const { email, password } = req.body;
-
-//   return User.findUserByCredentials(email, password)
-//     .then((user) => {
-//       const token = jwt.sign({ _id: user._id }, 'some-secret-key', { expiresIn: '7d' });
-//       res.send({ token });
-//     })
-//     .catch((err) => {
-//       res
-//         .status(401)
-//         .send({ message: err.message });
-//     });
-// }
 
 module.exports = {
   getUsers, getUser, changeAbout, changeAvatar,
