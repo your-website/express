@@ -14,13 +14,17 @@ function createCard(req, res) {
 }
 
 function deleteCard(req, res) {
-  Cards.findByIdAndRemove(req.params.cardId)
+  Cards.findById(req.params.cardId)
+    // eslint-disable-next-line consistent-return
     .then((cards) => {
-      if (!cards) {
-        res.status(404).send({ message: 'Такого пользователя нет' });
-      } else {
-        res.send({ data: cards });
-      }
+      if (req.user._id === cards.owner.toString()) {
+        Cards.findByIdAndRemove(req.params.cardId)
+          // eslint-disable-next-line consistent-return
+          .then((card) => {
+            res.send({ data: card });
+          })
+          .catch((err) => res.status(500).send({ message: err.message }));
+      } else return Promise.reject(new Error('Можно удалить только свою карточку'));
     })
     .catch((err) => res.status(500).send({ message: err.message }));
 }
