@@ -1,19 +1,20 @@
 const Cards = require('../models/card');
+const { NotFoundError, NotImplemented } = require('../middlewares/errors');
 
-function getCards(req, res) {
+function getCards(req, res, next) {
   Cards.find({})
     .then((cards) => res.send({ data: cards }))
-    .catch((err) => res.status(500).send({ message: err.message }));
+    .catch(next);
 }
 
-function createCard(req, res) {
+function createCard(req, res, next) {
   const { name, link } = req.body;
   Cards.create({ name, link, owner: req.user._id })
     .then((cards) => res.send({ data: cards }))
-    .catch((err) => res.status(500).send({ message: err.message }));
+    .catch(next);
 }
 
-function deleteCard(req, res) {
+function deleteCard(req, res, next) {
   Cards.findById(req.params.cardId)
     // eslint-disable-next-line consistent-return
     .then((cards) => {
@@ -23,34 +24,34 @@ function deleteCard(req, res) {
           .then((card) => {
             res.send({ data: card });
           })
-          .catch((err) => res.status(500).send({ message: err.message }));
-      } else return Promise.reject(new Error('Можно удалить только свою карточку'));
+          .catch(next);
+      } else throw new NotImplemented('Можно удалить только свою карточку');
     })
-    .catch((err) => res.status(500).send({ message: err.message }));
+    .catch(next);
 }
 
-function likeCard(req, res) {
+function likeCard(req, res, next) {
   Cards.findByIdAndUpdate(req.params.cardId, { $addToSet: { likes: req.user._id } }, { new: true })
     .then((cards) => {
       if (!cards) {
-        res.status(404).send({ message: 'Такого пользователя нет' });
+        throw new NotFoundError('Пользователь не найден');
       } else {
         res.send({ data: cards });
       }
     })
-    .catch((err) => res.status(500).send({ message: err.message }));
+    .catch(next);
 }
 
-function dislikeCard(req, res) {
+function dislikeCard(req, res, next) {
   Cards.findByIdAndUpdate(req.params.cardId, { $pull: { likes: req.user._id } }, { new: true })
     .then((cards) => {
       if (!cards) {
-        res.status(404).send({ message: 'Такого пользователя нет' });
+        throw new NotFoundError('Пользователь не найден');
       } else {
         res.send({ data: cards });
       }
     })
-    .catch((err) => res.status(500).send({ message: err.message }));
+    .catch(next);
 }
 
 module.exports = {
