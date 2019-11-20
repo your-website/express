@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+const { errors } = require('celebrate');
 const auth = require('./middlewares/auth');
 
 const { PORT = 3000, BASE_PATH } = process.env;
@@ -33,6 +34,8 @@ app.use((req, res) => {
   res.status(404).send({ message: 'Запрашиваемый ресурс не найден' });
 });
 
+app.use(errors());
+
 // eslint-disable-next-line no-unused-vars
 app.use((err, req, res, next) => {
   const { statusCode = 500, message } = err;
@@ -45,6 +48,7 @@ app.use((err, req, res, next) => {
         : message,
     });
 });
+
 app.listen(PORT, () => {
   // eslint-disable-next-line no-console
   console.log('Ссылка на сервер:');
