@@ -1,8 +1,8 @@
 Работа с Express.js. Создание собственного сервера.
 -------------
 #### Адрес:
-##### Сайт: [mesto-mesto.tk](www.mesto-mesto.tk);
-##### API: [api.mesto-mesto.tk](www.api.mesto-mesto.tk);
+##### Сайт: www.mesto-mesto.tk;
+##### API: www.api.mesto-mesto.tk;
 #### Чтобы развернуть проект у себя:
 
 1. Клонировать репозитарий командой: git clone https://github.com/your-website/express
