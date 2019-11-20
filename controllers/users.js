@@ -1,28 +1,35 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
+const { NotFoundError, Unauthorized } = require('../middlewares/errors');
 
 const { NODE_ENV, JWT_SECRET } = process.env;
 
-function getUsers(req, res) {
+function getUsers(req, res, next) {
   User.find({})
-    .then((user) => res.send({ data: user }))
-    .catch((err) => res.status(500).send({ message: err.message }));
-}
-
-function getUser(req, res) {
-  User.findById(req.params.id)
     .then((user) => {
       if (!user) {
-        res.status(404).send({ message: 'Такого пользователя нет' });
+        throw new NotFoundError('Нет пользователей');
       } else {
         res.send({ data: user });
       }
     })
-    .catch(() => res.status(500).send({ message: 'Такого пользователя нет' }));
+    .catch(next);
 }
 
-function changeAbout(req, res) {
+function getUser(req, res, next) {
+  User.findById(req.params.id)
+    .then((user) => {
+      if (!user) {
+        throw new NotFoundError('Пользователь не найден');
+      } else {
+        res.send({ data: user });
+      }
+    })
+    .catch(next);
+}
+
+function changeAbout(req, res, next) {
   const { name, about } = req.body;
   User.findByIdAndUpdate(
     { _id: req.user._id },
@@ -33,11 +40,17 @@ function changeAbout(req, res) {
       upsert: true,
     },
   )
-    .then((user) => res.send({ data: user }))
-    .catch((err) => res.status(500).send({ message: err.message }));
+    .then((user) => {
+      if (!user) {
+        throw new NotFoundError('Пользователь не найден');
+      } else {
+        res.send({ data: user });
+      }
+    })
+    .catch(next);
 }
 
-function changeAvatar(req, res) {
+function changeAvatar(req, res, next) {
   const { link } = req.body;
   User.findByIdAndUpdate(
     { _id: req.user._id },
@@ -48,15 +61,24 @@ function changeAvatar(req, res) {
       upsert: true,
     },
   )
-    .then((user) => res.send({ data: user }))
-    .catch((err) => res.status(500).send({ message: err.message }));
+    .then((user) => {
+      if (!user) {
+        throw new NotFoundError('Пользователь не найден');
+      } else {
+        res.send({ data: user });
+      }
+    })
+    .catch(next);
 }
 
-function login(req, res) {
+function login(req, res, next) {
   const { email, password } = req.body;
 
   return User.findUserByCredentials(email, password)
     .then((user) => {
+      if (!user) {
+        throw new Unauthorized('Неправильные почта или пароль');
+      }
       const token = jwt.sign(
         { _id: user._id },
         NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret',
@@ -69,12 +91,10 @@ function login(req, res) {
       })
         .end();
     })
-    .catch((err) => {
-      res.status(401).send({ message: err.message });
-    });
+    .catch(next);
 }
 
-function createUser(req, res) {
+function createUser(req, res, next) {
   bcrypt.hash(req.body.password, 10)
     .then((hash) => User.create({
       name: req.body.name,
@@ -84,14 +104,15 @@ function createUser(req, res) {
       password: hash,
     }))
     .then((user) => {
+      if (!user) {
+        throw new NotFoundError('Нет пользователя с таким id');
+      }
       res.status(201).send({
         _id: user._id,
         email: user.email,
       });
     })
-    .catch((err) => {
-      res.status(400).send(err);
-    });
+    .catch(next);
 }
 
 module.exports = {
